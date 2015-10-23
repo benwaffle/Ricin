@@ -14,29 +14,6 @@ namespace Tox {
     return Environment.get_user_config_dir () + "/tox/";
   }
 
-  public errordomain ErrNew {
-    Null,
-    Malloc,
-    PortAlloc,
-    BadProxy,
-    LoadFailed
-  }
-
-  public errordomain ErrFriendAdd {
-    Null,
-    TooLong,
-    NoMessage,
-    OwnKey,
-    AlreadySent,
-    BadChecksum,
-    BadNospam,
-    Malloc
-  }
-
-  public errordomain ErrFriendDelete {
-    NotFound
-  }
-
   public class Tox : Object {
     internal ToxCore.Tox handle;
     private HashTable<uint32, Friend> friends = new HashTable<uint32, Friend> (direct_hash, direct_equal);
@@ -120,29 +97,11 @@ namespace Tox {
         }
       }
       this.ipv6_enabled = opts.ipv6_enabled;
-      ERR_NEW error;
-      this.handle = new ToxCore.Tox (opts, out error);
 
-      switch (error) {
-        case ERR_NEW.NULL:
-          throw new ErrNew.Null ("One of the arguments to the function was NULL when it was not expected.");
-        case ERR_NEW.MALLOC:
-          throw new ErrNew.Malloc ("The function was unable to allocate enough memory to store the internal structures for the Tox object.");
-        case ERR_NEW.PORT_ALLOC:
-          throw new ErrNew.PortAlloc ("The function was unable to bind to a port.");
-        case ERR_NEW.PROXY_BAD_TYPE:
-          throw new ErrNew.BadProxy ("proxy_type was invalid.");
-        case ERR_NEW.PROXY_BAD_HOST:
-          throw new ErrNew.BadProxy ("proxy_type was valid but the proxy_host passed had an invalid format or was NULL.");
-        case ERR_NEW.PROXY_BAD_PORT:
-          throw new ErrNew.BadProxy ("proxy_type was valid, but the proxy_port was invalid.");
-        case ERR_NEW.PROXY_NOT_FOUND:
-          throw new ErrNew.BadProxy ("The proxy address passed could not be resolved.");
-        case ERR_NEW.LOAD_ENCRYPTED:
-          throw new ErrNew.LoadFailed ("The byte array to be loaded contained an encrypted save.");
-        case ERR_NEW.LOAD_BAD_FORMAT:
-          throw new ErrNew.LoadFailed ("The data format was invalid. This can happen when loading data that was saved by an older version of Tox, or when the data has been corrupted. When loading from badly formatted data, some data may have been loaded, and the rest is discarded. Passing an invalid length parameter also causes this error.");
-      }
+      ERR_NEW err;
+      this.handle = new ToxCore.Tox (opts, out err);
+      if (err != ERR_NEW.OK)
+        throw convert_err_new (err);
 
       this.handle.callback_self_connection_status ((self, status) => {
         switch (status) {
@@ -215,11 +174,11 @@ namespace Tox {
         Bytes full_data = this.friends[friend].files_send[file];
         Bytes slice = full_data.slice ((int) position, (int) (position + length));
 
-        ERR_FILE_SEND_CHUNK err;
-        this.handle.file_send_chunk (friend, file, position, slice.get_data (), out err);
+        ERR_FILE_SEND_CHUNK err2;
+        this.handle.file_send_chunk (friend, file, position, slice.get_data (), out err2);
 
-        if (err != ERR_FILE_SEND_CHUNK.OK)
-          debug ("file_send_chunk: %d", err);
+        if (err2 != ERR_FILE_SEND_CHUNK.OK)
+          debug ("file_send_chunk: %d", err2);
       });
 
       // recv
