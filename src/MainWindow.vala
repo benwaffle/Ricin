@@ -98,8 +98,8 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     paned_header.bind_property ("position", paned_main, "position", BindingFlags.SYNC_CREATE | BindingFlags.BIDIRECTIONAL);
 
     headerbar_right.bind_property ("title", this, "title", BindingFlags.SYNC_CREATE, (bind, src, ref target) => {
-        target = @"$(src.get_string ()) \u2015 Ricin";
-        return true;
+      target = @"$(src.get_string ()) \u2015 Ricin";
+      return true;
     });
 
     this.chat_stack.bind_property ("visible_child", this, "title", BindingFlags.SYNC_CREATE, (bind, src, ref target) => {

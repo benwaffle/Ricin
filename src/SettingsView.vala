@@ -32,8 +32,8 @@ class Ricin.SettingsView : Gtk.Notebook {
   [GtkCallback]
   private void copy_toxid () {
     Gtk.Clipboard
-      .get (Gdk.SELECTION_CLIPBOARD)
-      .set_text (this.label_tox_id.label, -1);
+    .get (Gdk.SELECTION_CLIPBOARD)
+    .set_text (this.label_tox_id.label, -1);
   }
 
   [GtkCallback]
