@@ -1,5 +1,9 @@
 [GtkTemplate (ui="/chat/tox/ricin/ui/main-window.ui")]
 public class Ricin.MainWindow : Gtk.ApplicationWindow {
+  [GtkChild] Gtk.Paned paned_header;
+  [GtkChild] Gtk.Paned paned_main;
+  [GtkChild] Gtk.HeaderBar headerbar_right;
+
   [GtkChild] Gtk.Image avatar_image;
   [GtkChild] Gtk.Entry entry_name;
   [GtkChild] Gtk.Entry entry_status;
@@ -90,6 +94,25 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
       error_dialog.show ();
       return;
     }
+
+    paned_header.bind_property ("position", paned_main, "position", BindingFlags.SYNC_CREATE | BindingFlags.BIDIRECTIONAL);
+
+    headerbar_right.bind_property ("title", this, "title", BindingFlags.SYNC_CREATE, (bind, src, ref target) => {
+        target = @"$(src.get_string ()) \u2015 Ricin";
+        return true;
+    });
+
+    this.chat_stack.bind_property ("visible_child", this, "title", BindingFlags.SYNC_CREATE, (bind, src, ref target) => {
+      var widget = src.get_object () as Gtk.Widget;
+      if (widget is ChatView) {
+        target = ((ChatView)widget).fr.name;
+      } else if (widget is SettingsView) {
+        target = "Settings";
+      } else {
+        return false;
+      }
+      return true;
+    });
 
     // Display the settings window while their is no friends online.
     var settings = new SettingsView (this.tox);

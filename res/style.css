@@ -1,3 +1,17 @@
+GtkHeaderBar.headerbar-left {
+    border-top-right-radius: 0px;
+}
+
+GtkHeaderBar.headerbar-right {
+    border-top-left-radius: 0px;
+}
+
+/* Fix adwaita hiding GtkPaned separator in GtkHeaderBar when window focused */
+.headerbar-paned .pane-separator {
+	border-radius: 0;
+	border-width: 0 1px 1px 0;
+}
+
 GtkLabel.info-message {
     color: @theme_selected_bg_color;
 }
