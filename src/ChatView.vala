@@ -146,27 +146,11 @@ class Ricin.ChatView : Gtk.Box {
     this.entry.text = "";
   }
 
-  /*private bool handle_links (string uri) {
-    if (!uri.has_prefix ("tox:")) {
-      return false; // Default behavior.
-    }
-
-    var main_window = this.get_toplevel () as MainWindow;
-    var toxid = uri.split ("tox:")[1];
-    if (toxid.length == ToxCore.ADDRESS_SIZE * 2) {
-      main_window.show_add_friend_popover_with_text (toxid);
-    } else {
-      var info_message = "ToxDNS is not supported yet.";
-      main_window.notify_message (@"<span color=\"#e74c3c\">$info_message</span>");
-    }
-
-    return true;
-  }*/
-
   [GtkCallback]
   private void choose_file_to_send () {
     var chooser = new Gtk.FileChooserDialog ("Choose a File",
-        (Gtk.Window)get_toplevel (), Gtk.FileChooserAction.OPEN,
+        get_toplevel () as Gtk.Window,
+        Gtk.FileChooserAction.OPEN,
         "_Cancel", Gtk.ResponseType.CANCEL,
         "_Open", Gtk.ResponseType.ACCEPT);
     if (chooser.run () == Gtk.ResponseType.ACCEPT) {
