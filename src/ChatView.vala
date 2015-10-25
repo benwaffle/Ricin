@@ -1,15 +1,9 @@
 [GtkTemplate (ui="/chat/tox/ricin/ui/chat-view.ui")]
 class Ricin.ChatView : Gtk.Box {
-  [GtkChild] Gtk.Image user_avatar;
-  [GtkChild] Gtk.Label username;
-  [GtkChild] Gtk.Label status_message;
   [GtkChild] Gtk.ScrolledWindow scroll_messages;
   [GtkChild] Gtk.ListBox messages_list;
   [GtkChild] public Gtk.Entry entry;
-  [GtkChild] Gtk.Button send;
   [GtkChild] Gtk.Button send_file;
-  [GtkChild] Gtk.Button button_audio_call;
-  [GtkChild] Gtk.Button button_video_call;
   [GtkChild] Gtk.Revealer friend_typing;
 
   public Tox.Friend fr;
@@ -36,18 +30,6 @@ class Ricin.ChatView : Gtk.Box {
     this.stack = stack;
     this.view_name = view_name;
 
-    if (fr.name == null) {
-      this.username.set_text (fr.pubkey);
-    }
-
-    this.status_message.set_markup (Util.add_markup (fr.status_message));
-
-    var _avatar_path = Tox.profile_dir () + "avatars/" + this.fr.pubkey + ".png";
-    if (FileUtils.test (_avatar_path, FileTest.EXISTS)) {
-      var pixbuf = new Gdk.Pixbuf.from_file_at_scale (_avatar_path, 48, 48, false);
-      this.user_avatar.pixbuf = pixbuf;
-    }
-
     fr.friend_info.connect ((message) => {
       messages_list.add (new SystemMessageListRow (message));
       //this.add_row (MessageRowType.System, new SystemMessageListRow (message));
@@ -56,10 +38,6 @@ class Ricin.ChatView : Gtk.Box {
     handle.global_info.connect ((message) => {
       messages_list.add (new SystemMessageListRow (message));
       //this.add_row (MessageRowType.System, new SystemMessageListRow (message));
-    });
-
-    fr.avatar.connect (p => {
-      this.user_avatar.pixbuf = p;
     });
 
     fr.message.connect (message => {
@@ -138,15 +116,8 @@ class Ricin.ChatView : Gtk.Box {
     });*/
 
     fr.bind_property ("connected", entry, "sensitive", BindingFlags.DEFAULT);
-    fr.bind_property ("connected", send, "sensitive", BindingFlags.DEFAULT);
     fr.bind_property ("connected", send_file, "sensitive", BindingFlags.DEFAULT);
     fr.bind_property ("typing", friend_typing, "reveal_child", BindingFlags.DEFAULT);
-    fr.bind_property ("name", username, "label", BindingFlags.DEFAULT);
-    fr.bind_property ("status-message", status_message, "label", BindingFlags.DEFAULT, (binding, val, ref target) => {
-      string status_message = (string) val;
-      target.set_string ("<span size=\"10\">" + Util.add_markup (status_message) + "</span>");
-      return true;
-    });
   }
 
   [GtkCallback]
@@ -194,7 +165,8 @@ class Ricin.ChatView : Gtk.Box {
 
   [GtkCallback]
   private void choose_file_to_send () {
-    var chooser = new Gtk.FileChooserDialog ("Choose a File", null, Gtk.FileChooserAction.OPEN,
+    var chooser = new Gtk.FileChooserDialog ("Choose a File",
+        (Gtk.Window)get_toplevel (), Gtk.FileChooserAction.OPEN,
         "_Cancel", Gtk.ResponseType.CANCEL,
         "_Open", Gtk.ResponseType.ACCEPT);
     if (chooser.run () == Gtk.ResponseType.ACCEPT) {
