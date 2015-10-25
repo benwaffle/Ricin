@@ -97,21 +97,25 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
 
     paned_header.bind_property ("position", paned_main, "position", BindingFlags.SYNC_CREATE | BindingFlags.BIDIRECTIONAL);
 
+    // window title = "headebar title - Ricin"
     headerbar_right.bind_property ("title", this, "title", BindingFlags.SYNC_CREATE, (bind, src, ref target) => {
       target = @"$(src.get_string ()) \u2015 Ricin";
       return true;
     });
 
-    this.chat_stack.bind_property ("visible_child", this, "title", BindingFlags.SYNC_CREATE, (bind, src, ref target) => {
-      var widget = src.get_object () as Gtk.Widget;
+    // update headerbar title
+    this.chat_stack.notify["visible-child"].connect ((obj, prop) => {
+      var widget = this.chat_stack.visible_child;
+      if (widget == null)
+        return;
       if (widget is ChatView) {
-        target = ((ChatView)widget).fr.name;
+        headerbar_right.title = ((ChatView)widget).fr.name;
       } else if (widget is SettingsView) {
-        target = "Settings";
+        headerbar_right.title = "Settings";
       } else {
-        return false;
+        debug (widget.get_type ().name ());
+        assert_not_reached ();
       }
-      return true;
     });
 
     // Display the settings window while their is no friends online.
