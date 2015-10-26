@@ -19,6 +19,8 @@ class Ricin.SettingsView : Gtk.Notebook {
     this.handle = handle;
     this.label_tox_id.set_text (handle.id);
 
+    this.name = "Settings";
+
     this.combobox_languages.append ("english", "English (default)");
     this.combobox_languages.set_active_id ("english");
 

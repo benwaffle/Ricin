@@ -3,6 +3,8 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
   [GtkChild] Gtk.Paned paned_header;
   [GtkChild] Gtk.Paned paned_main;
   [GtkChild] Gtk.HeaderBar headerbar_right;
+  [GtkChild] Gtk.Button button_call;
+  [GtkChild] Gtk.Button button_video_chat;
 
   [GtkChild] Gtk.Image avatar_image;
   [GtkChild] Gtk.Entry entry_name;
@@ -106,22 +108,21 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     // update headerbar title
     this.chat_stack.notify["visible-child"].connect ((obj, prop) => {
       var widget = this.chat_stack.visible_child;
-      if (widget == null)
-        return;
-      if (widget is ChatView) {
-        headerbar_right.title = ((ChatView)widget).fr.name;
-      } else if (widget is SettingsView) {
-        headerbar_right.title = "Settings";
-      } else {
-        debug (widget.get_type ().name ());
-        assert_not_reached ();
+      button_call.visible = false;
+      button_video_chat.visible = false;
+      if (widget != null) {
+        headerbar_right.title = widget.name;
+
+        if (widget is ChatView) {
+          button_call.visible = true;
+          button_video_chat.visible = true;
+        }
       }
     });
 
     // Display the settings window while their is no friends online.
     var settings = new SettingsView (this.tox);
-    this.chat_stack.add_named (settings, "settings");
-    this.chat_stack.set_visible_child (settings);
+    this.chat_stack.add_named (settings, settings.name);
 
     var path = avatar_path ();
     if (FileUtils.test (path, FileTest.EXISTS)) {
@@ -159,7 +160,8 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
             debug ("Friend position: %u", friend.position);
             friends.append (friend);
             var view_name = "chat-%s".printf (friend.pubkey);
-            chat_stack.add_named (new ChatView (this.tox, friend, this.chat_stack, view_name), view_name);
+            var chatview = new ChatView (this.tox, friend, this.chat_stack, view_name);
+            chat_stack.add_named (chatview, chatview.name);
 
             var info_message = "The friend request has been accepted. Please wait the contact to appears online.";
             this.notify_message (@"<span color=\"#27ae60\">$info_message</span>", 5000);
@@ -194,7 +196,7 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     });
 
     this.tox.run_loop ();
-    this.show_all ();
+    this.show ();
   }
 
   ~MainWindow () {

@@ -29,6 +29,7 @@ class Ricin.ChatView : Gtk.Box {
     this.fr = fr;
     this.stack = stack;
     this.view_name = view_name;
+    this.name = fr.name;
 
     fr.friend_info.connect ((message) => {
       messages_list.add (new SystemMessageListRow (message));
