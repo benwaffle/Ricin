@@ -131,7 +131,6 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
       this.avatar_image.pixbuf = pixbuf;
     }
 
-    this.init_tray_icon ();
     // TODO
     this.entry_name.set_text (tox.username);
     this.entry_status.set_text (tox.status_message);
@@ -214,68 +213,6 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     this.entry_friend_message.buffer.text = friend_message;
     this.button_add_friend_show.visible = false;
     this.add_friend.reveal_child = true;
-  }
-
-  private void init_tray_icon () {
-    try {
-      Gdk.Pixbuf tray_icon = new Gdk.Pixbuf.from_resource ("/chat/tox/ricin/images/icons/Ricin-48x48.png");
-      this.statusicon_main = new Gtk.StatusIcon.from_pixbuf (tray_icon);
-      this.statusicon_main.set_tooltip_text ("Ricin");
-      this.statusicon_main.visible = true;
-    } catch (Error e) {
-      warning ("Pixbuf error: %s", e.message);
-    }
-
-
-    this.menu_statusicon_main = new Gtk.Menu ();
-
-    // ONLINE
-    var menuOnline = new Gtk.ImageMenuItem.with_label("Online");
-    var menuOnlineImage = new Gtk.Image.from_icon_name("user-available", Gtk.IconSize.MENU);
-    menuOnline.always_show_image = true;
-    menuOnline.set_image(menuOnlineImage);
-    menuOnline.activate.connect (() => {
-      this.tox.status = Tox.UserStatus.ONLINE;
-      this.image_user_status.icon_name = "user-available";
-    });
-
-    // BUSY
-    var menuBusy = new Gtk.ImageMenuItem.with_label("Busy");
-    var menuBusyImage = new Gtk.Image.from_icon_name("user-busy", Gtk.IconSize.MENU);
-    menuBusy.always_show_image = true;
-    menuBusy.set_image(menuBusyImage);
-    menuBusy.activate.connect (() => {
-      this.tox.status = Tox.UserStatus.BUSY;
-      this.image_user_status.icon_name = "user-busy";
-    });
-
-    // AWAY
-    var menuAway = new Gtk.ImageMenuItem.with_label("Away");
-    var menuAwayImage = new Gtk.Image.from_icon_name("user-away", Gtk.IconSize.MENU);
-    menuAway.always_show_image = true;
-    menuAway.set_image(menuAwayImage);
-    menuAway.activate.connect (() => {
-      this.tox.status = Tox.UserStatus.AWAY;
-      this.image_user_status.icon_name = "user-away";
-    });
-
-    // QUIT
-    var menuQuit = new Gtk.ImageMenuItem.with_label("Quit");
-    var menuQuitImage = new Gtk.Image.from_icon_name("window-close", Gtk.IconSize.MENU);
-    menuQuit.always_show_image = true;
-    menuQuit.set_image(menuQuitImage);
-    menuQuit.activate.connect(this.close);
-
-    this.menu_statusicon_main.append (menuOnline);
-    this.menu_statusicon_main.append (menuAway);
-    this.menu_statusicon_main.append (menuBusy);
-    this.menu_statusicon_main.append (menuQuit);
-
-    this.statusicon_main.popup_menu.connect ((button, time) => {
-      this.menu_statusicon_main.popup (null, null, null, button, time);
-    });
-
-    this.menu_statusicon_main.show_all ();
   }
 
   [GtkCallback]
