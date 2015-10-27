@@ -22,4 +22,7 @@
         <file>images/icons/Ricin-512x512.png</file>
         <file>images/icons/Ricin-600x600.png</file>
     </gresource>
+    <gresource prefix="/chat/tox/ricin/gtk">
+        <file preprocess="xml-stripblanks" compressed="true">menus.ui</file>
+    </gresource>
 </gresources>
