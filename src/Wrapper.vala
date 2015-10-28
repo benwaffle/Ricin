@@ -488,6 +488,7 @@ namespace Tox {
   public class Friend : Object {
     private weak Tox tox;
     public uint32 num; // libtoxcore identifier
+    // TODO
     public uint position;
     // Bytes is immutable
     internal HashTable<uint32, Bytes> files_send = new HashTable<uint32, Bytes> (direct_hash, direct_equal);

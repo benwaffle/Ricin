@@ -14,15 +14,14 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
 
   [GtkChild] Gtk.ListBox friendlist;
   [GtkChild] public Gtk.Stack chat_stack;
-  [GtkChild] public Gtk.Button button_add_friend_show;
 
-  // Add friend revealer.
-  [GtkChild] public Gtk.Revealer add_friend;
-  [GtkChild] public Gtk.Entry entry_friend_id;
+  // Add friend popover
+  [GtkChild] Gtk.MenuButton button_add_friend_show;
+  [GtkChild] Gtk.Entry entry_friend_id;
   [GtkChild] Gtk.TextView entry_friend_message;
   [GtkChild] Gtk.Label label_add_error;
 
-  // System notify.
+  // System notify
   [GtkChild] public Gtk.Revealer revealer_system_notify;
   [GtkChild] public Gtk.Label label_system_notify;
 
@@ -211,17 +210,12 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     this.tox.save_data ();
   }
 
-  public void show_add_friend_popover_with_text (string toxid = "", string message = "") {
-    var friend_message = "";
-
-    if (message.strip () == "") {
-      friend_message = "Hello! It's " + this.tox.username + ", let's be friends.";
-    }
-
-    this.entry_friend_id.set_text (toxid);
-    this.entry_friend_message.buffer.text = friend_message;
-    this.button_add_friend_show.visible = false;
-    this.add_friend.reveal_child = true;
+  public void show_add_friend_popover (string toxid = "") {
+    if (toxid.length > 0)
+      entry_friend_id.text = toxid;
+    if (entry_friend_message.buffer.get_char_count () == 0)
+      entry_friend_message.buffer.text = "Hello! It's " + tox.username + ", let's be friends.";
+    button_add_friend_show.active = true;
   }
 
   [GtkCallback]
@@ -239,38 +233,19 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
   }
 
   [GtkCallback]
-  public void show_add_friend_popover () {
-    this.show_add_friend_popover_with_text ();
-  }
-
-  [GtkCallback]
-  private void hide_add_friend_popover () {
-    this.add_friend.reveal_child = false;
-    this.label_add_error.set_text ("Add a friend");
-    this.button_add_friend_show.visible = true;
-  }
-
-  [GtkCallback]
   private void ui_add_friend () {
     debug ("add_friend");
-    var tox_id = this.entry_friend_id.get_text ();
+    var tox_id = this.entry_friend_id.text;
     var message = this.entry_friend_message.buffer.text;
     var error_message = "";
-    this.label_add_error.use_markup = true;
-    this.label_add_error.use_markup = true;
-    this.label_add_error.halign = Gtk.Align.CENTER;
-    this.label_add_error.wrap_mode = Pango.WrapMode.CHAR;
-    this.label_add_error.selectable = true;
-    this.label_add_error.set_line_wrap (true);
 
     if (tox_id.length == ToxCore.ADDRESS_SIZE*2) { // bytes -> chars
       try {
         var friend = tox.add_friend (tox_id, message);
         this.tox.save_data (); // Needed to avoid breaking profiles if app crash.
-        this.entry_friend_id.set_text (""); // Clear the entry after adding a friend.
-        this.add_friend.reveal_child = false;
+        this.entry_friend_id.text = ""; // Clear the entry after adding a friend.
+        this.entry_friend_message.buffer.text = "";
         this.label_add_error.set_text ("Add a friend");
-        this.button_add_friend_show.visible = true;
         return;
       } catch (Tox.ErrFriendAdd error) {
         debug ("Adding friend failed: %s", error.message);
@@ -284,13 +259,8 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
       error_message = "ToxID is invalid.";
     }
 
-    if (error_message.strip () != "") {
+    if (error_message.length > 0)
       this.label_add_error.set_markup (@"<span color=\"#e74c3c\">$error_message</span>");
-      return;
-    }
-
-    this.add_friend.reveal_child = false;
-    this.button_add_friend_show.visible = true;
   }
 
   [GtkCallback]
@@ -311,6 +281,7 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     this.tox.username = Util.escape_html (this.entry_name.text);
   }
 
+  // TODO
   [GtkCallback]
   private void cycle_user_status () {
     var status = this.tox.status;
