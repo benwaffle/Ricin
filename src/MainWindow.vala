@@ -95,7 +95,18 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
       return;
     }
 
-    paned_header.bind_property ("position", paned_main, "position", BindingFlags.SYNC_CREATE | BindingFlags.BIDIRECTIONAL);
+    paned_header.bind_property ("position", paned_main, "position", BindingFlags.SYNC_CREATE | BindingFlags.BIDIRECTIONAL,
+      (bind, src, ref target) => {
+        target = src;
+        var header = bind.source as Gtk.Paned;
+        var main = bind.target as Gtk.Paned;
+        if (header.position < main.min_position)
+          header.position = main.min_position;
+        else if (main.max_position < header.position)
+          header.position = main.max_position;
+        return true;
+      }
+    );
 
     // window title = "headebar title - Ricin"
     headerbar_right.bind_property ("title", this, "title", BindingFlags.SYNC_CREATE, (bind, src, ref target) => {

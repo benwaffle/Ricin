@@ -33,10 +33,8 @@
       <object class="GtkPaned" id="paned_main">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="position">250</property>
         <child>
           <object class="GtkBox" id="box2">
-            <property name="width_request">120</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
@@ -115,7 +113,6 @@
                     </child>
                     <child>
                       <object class="GtkButton" id="button_user_status">
-                        <property name="width_request">25</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
@@ -181,7 +178,6 @@
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkRevealer" id="add_friend">
-                    <property name="height_request">0</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="resize_mode">immediate</property>
@@ -235,7 +231,6 @@
                                 <property name="can_focus">False</property>
                                 <child>
                                   <object class="GtkTextView" id="entry_friend_message">
-                                    <property name="height_request">100</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="vadjustment">adjustment1</property>
@@ -374,7 +369,7 @@
           </object>
           <packing>
             <property name="resize">True</property>
-            <property name="shrink">True</property>
+            <property name="shrink">False</property>
           </packing>
         </child>
       </object>
@@ -386,7 +381,6 @@
         <property name="position">250</property>
         <child>
           <object class="GtkHeaderBar" id="headerbar_left">
-            <property name="width_request">120</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="title">Contacts</property>
@@ -417,7 +411,7 @@
           </object>
           <packing>
             <property name="resize">False</property>
-            <property name="shrink">True</property>
+            <property name="shrink">False</property>
           </packing>
         </child>
         <child>
@@ -428,7 +422,6 @@
             <property name="show_close_button">True</property>
             <child>
               <object class="GtkButton" id="button_call">
-                <property name="visible">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <child>
@@ -448,7 +441,6 @@
             </child>
             <child>
               <object class="GtkButton" id="button_video_chat">
-                <property name="visible">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <child>
@@ -494,7 +486,7 @@
           </object>
           <packing>
             <property name="resize">True</property>
-            <property name="shrink">True</property>
+            <property name="shrink">False</property>
           </packing>
         </child>
         <style>
