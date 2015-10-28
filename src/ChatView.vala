@@ -10,6 +10,7 @@ class Ricin.ChatView : Gtk.Box {
   private weak Tox.Tox handle;
   private weak Gtk.Stack stack;
   private string view_name;
+  private ulong[] handlers = {};
 
   private enum MessageRowType {
     Normal,
@@ -31,17 +32,17 @@ class Ricin.ChatView : Gtk.Box {
     this.view_name = view_name;
     this.name = fr.name;
 
-    fr.friend_info.connect ((message) => {
+    handlers += fr.friend_info.connect ((message) => {
       messages_list.add (new SystemMessageListRow (message));
       //this.add_row (MessageRowType.System, new SystemMessageListRow (message));
     });
 
-    handle.global_info.connect ((message) => {
+    handlers += handle.global_info.connect ((message) => {
       messages_list.add (new SystemMessageListRow (message));
       //this.add_row (MessageRowType.System, new SystemMessageListRow (message));
     });
 
-    fr.message.connect (message => {
+    handlers += fr.message.connect (message => {
       var visible_child = this.stack.get_visible_child_name ();
       if (visible_child != this.view_name) {
         var avatar_path = Tox.profile_dir () + "avatars/" + this.fr.pubkey + ".png";
@@ -57,7 +58,7 @@ class Ricin.ChatView : Gtk.Box {
       //this.add_row (MessageRowType.Normal, new MessageListRow (fr.name, Util.add_markup (message), time ()));
     });
 
-    fr.action.connect (message => {
+    handlers += fr.action.connect (message => {
       var visible_child = this.stack.get_visible_child_name ();
       if (visible_child != this.view_name) {
 
@@ -76,7 +77,7 @@ class Ricin.ChatView : Gtk.Box {
       //this.add_row (MessageRowType.Action, new SystemMessageListRow (message_escaped));
     });
 
-    fr.file_transfer.connect ((name, size, id) => {
+    handlers += fr.file_transfer.connect ((name, size, id) => {
       string downloads = Environment.get_user_special_dir (UserDirectory.DOWNLOAD) + "/";
       string filename = name;
       int i = 0;
@@ -99,7 +100,7 @@ class Ricin.ChatView : Gtk.Box {
       }
     });
 
-    /*fr.file_done.connect ((name, bytes) => {
+    /*handlers += fr.file_done.connect ((name, bytes) => {
       string downloads = Environment.get_user_special_dir (UserDirectory.DOWNLOAD) + "/";
       string filename = name;
       int i = 0;
@@ -119,6 +120,11 @@ class Ricin.ChatView : Gtk.Box {
     fr.bind_property ("connected", entry, "sensitive", BindingFlags.DEFAULT);
     fr.bind_property ("connected", send_file, "sensitive", BindingFlags.DEFAULT);
     fr.bind_property ("typing", friend_typing, "reveal_child", BindingFlags.DEFAULT);
+  }
+
+  ~ChatView () {
+    foreach (ulong h in handlers)
+      fr.disconnect (h);
   }
 
   [GtkCallback]
