@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+
   <menu id="app-menu">
     <item>
       <attribute name="label">Settings</attribute>
@@ -16,4 +17,5 @@
       </item>
     </section>
   </menu>
+
 </interface>

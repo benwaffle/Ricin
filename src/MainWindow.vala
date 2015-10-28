@@ -30,8 +30,6 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
 
   public Tox.Tox tox;
   public string focused_view;
-  private Gtk.Menu menu_statusicon_main;
-  private Gtk.StatusIcon statusicon_main;
 
   public signal void notify_message (string message, int timeout = 5000);
 
@@ -136,7 +134,7 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     this.entry_status.set_text (tox.status_message);
     this.friendlist.set_sort_func (sort_friendlist_online);
 
-    this.friendlist.bind_model (this.friends, fr => new FriendListRow (fr as Tox.Friend));
+    this.friendlist.bind_model (this.friends, fr => new FriendListRow (fr as Tox.Friend, this));
 
     this.entry_status.bind_property ("text", tox, "status_message", BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE);
 
