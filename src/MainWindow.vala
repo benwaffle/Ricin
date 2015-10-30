@@ -13,6 +13,9 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
   [GtkChild] Gtk.Image image_user_status;
 
   [GtkChild] Gtk.ListBox friendlist;
+  [GtkChild] Gtk.ToggleButton toggle_search;
+  [GtkChild] Gtk.SearchBar friend_search_bar;
+  [GtkChild] Gtk.SearchEntry friend_search;
   [GtkChild] public Gtk.Stack chat_stack;
 
   // Add friend popover
@@ -34,18 +37,6 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
 
   private string avatar_path () {
     return Tox.profile_dir () + "avatars/" + this.tox.pubkey + ".png";
-  }
-
-  /**
-  * This is the sort method used for sorting contacts based on:
-  * Contact is online (top) → Contact is offline (end)
-  * Contact status: Online → Away → Busy → Offline.
-  */
-  public static int sort_friendlist_online (Gtk.Widget row1, Gtk.Widget row2) {
-    var friend1 = (row1 as FriendListRow);
-    var friend2 = (row2 as FriendListRow);
-
-    return friend1.fr.status - friend2.fr.status;
   }
 
   public void remove_friend (Tox.Friend fr) {
@@ -142,11 +133,26 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     // TODO
     this.entry_name.set_text (tox.username);
     this.entry_status.set_text (tox.status_message);
-    this.friendlist.set_sort_func (sort_friendlist_online);
+
+    this.friendlist.set_sort_func ((row1, row2) => {
+      var friend1 = row1 as FriendListRow;
+      var friend2 = row2 as FriendListRow;
+      return friend1.fr.status - friend2.fr.status;
+    });
+    this.friendlist.set_filter_func (row => {
+      string? search = friend_search.text;
+      if (search == null || search.length == 0)
+        return true;
+      var friend = row as FriendListRow;
+      string name = friend.fr.name;
+      return name.down ().index_of (search) != -1;
+    });
 
     this.friendlist.bind_model (this.friends, fr => new FriendListRow (fr as Tox.Friend, this));
 
     this.entry_status.bind_property ("text", tox, "status_message", BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE);
+
+    this.toggle_search.bind_property ("active", friend_search_bar, "search-mode-enabled", BindingFlags.BIDIRECTIONAL);
 
     tox.notify["connected"].connect ((src, prop) => {
       this.image_user_status.icon_name = this.tox.connected ? "user-available" : "user-offline";
@@ -334,5 +340,10 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     }
 
     chooser.close ();
+  }
+
+  [GtkCallback]
+  public void friend_list_update_search () {
+    friendlist.invalidate_filter ();
   }
 }
