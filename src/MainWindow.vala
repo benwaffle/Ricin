@@ -71,7 +71,7 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
   }
 
   public MainWindow (Gtk.Application app, string profile) {
-    Object (application: app);
+    Object (application: app, show_menubar: false);
 
     var opts = Tox.Options.create ();
     opts.ipv6_enabled = true;
