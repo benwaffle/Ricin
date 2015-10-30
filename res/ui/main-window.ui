@@ -2,26 +2,6 @@
 <!-- Generated with glade 3.19.0 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <object class="GtkAdjustment" id="adjustment1">
-    <property name="upper">100</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkImage" id="image1">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">window-close-symbolic</property>
-  </object>
-  <object class="GtkImage" id="image2">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">object-select-symbolic</property>
-  </object>
-  <object class="GtkImage" id="image_user_status">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">user-offline</property>
-  </object>
   <template class="RicinMainWindow" parent="GtkApplicationWindow">
     <property name="width_request">700</property>
     <property name="height_request">400</property>
@@ -117,11 +97,17 @@
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="image">image_user_status</property>
                         <property name="relief">none</property>
                         <property name="focus_on_click">False</property>
                         <property name="always_show_image">True</property>
                         <signal name="clicked" handler="cycle_user_status" swapped="no"/>
+                        <child>
+                          <object class="GtkImage" id="image_user_status">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">user-offline</property>
+                          </object>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
