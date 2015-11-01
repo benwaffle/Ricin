@@ -99,17 +99,17 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     }
 
     paned_header.bind_property ("position", paned_main, "position", BindingFlags.SYNC_CREATE | BindingFlags.BIDIRECTIONAL,
-      (bind, src, ref target) => {
-        target = src;
-        var header = bind.source as Gtk.Paned;
-        var main = bind.target as Gtk.Paned;
-        if (header.position < main.min_position)
-          header.position = main.min_position;
-        else if (main.max_position < header.position)
-          header.position = main.max_position;
-        return true;
+    (bind, src, ref target) => {
+      target = src;
+      var header = bind.source as Gtk.Paned;
+      var main = bind.target as Gtk.Paned;
+      if (header.position < main.min_position) {
+        header.position = main.min_position;
+      } else if (main.max_position < header.position) {
+        header.position = main.max_position;
       }
-    );
+      return true;
+    });
 
     // window title = "headebar title - Ricin"
     headerbar_right.bind_property ("title", this, "title", BindingFlags.SYNC_CREATE, (bind, src, ref target) => {
@@ -154,8 +154,9 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     });
     this.friendlist.set_filter_func (row => {
       string? search = friend_search.text;
-      if (search == null || search.length == 0)
+      if (search == null || search.length == 0) {
         return true;
+      }
       var friend = row as FriendListRow;
       string name = friend.fr.name;
       return name.down ().index_of (search) != -1;
@@ -180,21 +181,21 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     entry_status.bind_property ("text", profile_button_status, "label", BindingFlags.SYNC_CREATE);
     tox.bind_property ("username", profile_button_username, "label", BindingFlags.SYNC_CREATE);
     tox.bind_property ("status", profile_button_userstatus, "icon_name", BindingFlags.SYNC_CREATE,
-      (bind, src, ref target) => {
-        var status = (Tox.UserStatus)src;
-        if (status == Tox.UserStatus.ONLINE)
-          target = "user-available";
-        else if (status == Tox.UserStatus.AWAY)
-          target = "user-away";
-        else if (status == Tox.UserStatus.BUSY)
-          target = "user-busy";
-        else if (status == Tox.UserStatus.OFFLINE)
-          target = "user-offline";
-        else if (status == Tox.UserStatus.BLOCKED) {
-          assert_not_reached (); // only friends can be blocked
-          return false;
-        }
-        return true;
+    (bind, src, ref target) => {
+      var status = (Tox.UserStatus)src;
+      if (status == Tox.UserStatus.ONLINE) {
+        target = "user-available";
+      } else if (status == Tox.UserStatus.AWAY) {
+        target = "user-away";
+      } else if (status == Tox.UserStatus.BUSY) {
+        target = "user-busy";
+      } else if (status == Tox.UserStatus.OFFLINE) {
+        target = "user-offline";
+      } else if (status == Tox.UserStatus.BLOCKED) {
+        assert_not_reached (); // only friends can be blocked
+        return false;
+      }
+      return true;
     });
     tox.bind_property ("connected", button_show_profile, "sensitive", BindingFlags.SYNC_CREATE);
 
@@ -256,10 +257,12 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
   }
 
   public void show_add_friend_popover (string toxid = "") {
-    if (toxid.length > 0)
+    if (toxid.length > 0) {
       entry_friend_id.text = toxid;
-    if (entry_friend_message.buffer.get_char_count () == 0)
+    }
+    if (entry_friend_message.buffer.get_char_count () == 0) {
       entry_friend_message.buffer.text = "Hello! It's " + tox.username + ", let's be friends.";
+    }
     button_add_friend_show.active = true;
   }
 
@@ -304,8 +307,9 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
       error_message = "ToxID is invalid.";
     }
 
-    if (error_message.length > 0)
+    if (error_message.length > 0) {
       this.label_add_error.set_markup (@"<span color=\"#e74c3c\">$error_message</span>");
+    }
   }
 
   [GtkCallback]
@@ -373,13 +377,13 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
   // TODO: make user status a GAction
   [GtkCallback]
   private void toggle_user_status (Gtk.ToggleButton button) {
-    if (button.name == "button_online")
+    if (button.name == "button_online") {
       tox.status = Tox.UserStatus.ONLINE;
-    else if (button.name == "button_busy")
+    } else if (button.name == "button_busy") {
       tox.status = Tox.UserStatus.BUSY;
-    else if (button.name == "button_away")
+    } else if (button.name == "button_away") {
       tox.status = Tox.UserStatus.AWAY;
-    else {
+    } else {
       assert_not_reached ();
     }
   }

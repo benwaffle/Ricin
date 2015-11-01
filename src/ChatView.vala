@@ -123,8 +123,9 @@ class Ricin.ChatView : Gtk.Box {
   }
 
   ~ChatView () {
-    foreach (ulong h in handlers)
+    foreach (ulong h in handlers) {
       fr.disconnect (h);
+    }
   }
 
   [GtkCallback]

@@ -90,11 +90,7 @@ namespace Tox {
 
     public UserStatus status {
       get {
-        if (connected) {
-          return core_to_wrapper_status (handle.status);
-        } else {
-          return UserStatus.OFFLINE;
-        }
+        return connected ? core_to_wrapper_status (handle.status) : UserStatus.OFFLINE;
       }
       set {
         this.handle.status = wrapper_to_core_status (value);
@@ -217,7 +213,7 @@ namespace Tox {
         this.friends[num].set_user_status (status);
       });
 
-      this.handle.callback_friend_status_message ((self, num, message) => {
+      handle.callback_friend_status_message ((self, num, message) => {
         if (this.friends[num].blocked) {
           return;
         }
@@ -225,7 +221,7 @@ namespace Tox {
         this.friends[num].status_message = Util.arr2str (message);
       });
 
-      this.handle.callback_friend_message ((self, num, type, message) => {
+      handle.callback_friend_message ((self, num, type, message) => {
         if (this.friends[num].blocked) {
           return;
         }
@@ -237,7 +233,7 @@ namespace Tox {
         }
       });
 
-      this.handle.callback_friend_typing ((self, num, is_typing) => {
+      handle.callback_friend_typing ((self, num, is_typing) => {
         if (this.friends[num].blocked) {
           return;
         }
@@ -274,7 +270,7 @@ namespace Tox {
       });
 
       // recv
-      this.handle.callback_file_recv_control ((self, friend, file, control) => {
+      handle.callback_file_recv_control ((self, friend, file, control) => {
         if (this.friends[friend].blocked) {
           return;
         }
@@ -295,7 +291,7 @@ namespace Tox {
       });
 
       // recv
-      this.handle.callback_file_recv ((self, friend, file, kind, size, filename) => {
+      handle.callback_file_recv ((self, friend, file, kind, size, filename) => {
         if (this.friends[friend].blocked) {
           this.handle.file_control (friend, file, FileControl.CANCEL, null);
           return;
@@ -313,7 +309,7 @@ namespace Tox {
       });
 
       // recv
-      this.handle.callback_file_recv_chunk ((self, friend, file, position, data) => {
+      handle.callback_file_recv_chunk ((self, friend, file, position, data) => {
         if (this.friends[friend].blocked) {
           this.handle.file_control (friend, file, FileControl.CANCEL, null);
           return;
