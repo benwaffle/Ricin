@@ -1,24 +1,30 @@
 [GtkTemplate (ui="/chat/tox/ricin/ui/main-window.ui")]
 public class Ricin.MainWindow : Gtk.ApplicationWindow {
+  // Header
   [GtkChild] Gtk.Paned paned_header;
   [GtkChild] Gtk.Paned paned_main;
   [GtkChild] Gtk.HeaderBar headerbar_right;
   [GtkChild] Gtk.Button button_call;
   [GtkChild] Gtk.Button button_video_chat;
 
+  // Profile
   [GtkChild] Gtk.Image avatar_image;
   [GtkChild] Gtk.Entry entry_name;
   [GtkChild] Gtk.Entry entry_status;
   [GtkChild] Gtk.Button button_user_status;
   [GtkChild] Gtk.Image image_user_status;
 
+  // Friend list
   [GtkChild] Gtk.ListBox friendlist;
   [GtkChild] Gtk.ToggleButton toggle_search;
   [GtkChild] Gtk.SearchBar friend_search_bar;
   [GtkChild] Gtk.SearchEntry friend_search;
+
+  // Main Content pane
   [GtkChild] public Gtk.Stack chat_stack;
 
   // Add friend popover
+  [GtkChild] Gtk.Widget add_friend_popover_content;
   [GtkChild] Gtk.MenuButton button_add_friend_show;
   [GtkChild] Gtk.Entry entry_friend_id;
   [GtkChild] Gtk.TextView entry_friend_message;
@@ -153,6 +159,10 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     this.entry_status.bind_property ("text", tox, "status_message", BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE);
 
     this.toggle_search.bind_property ("active", friend_search_bar, "search-mode-enabled", BindingFlags.BIDIRECTIONAL);
+
+    var add_friend_popover = new Gtk.Popover (button_add_friend_show);
+    add_friend_popover.add (add_friend_popover_content);
+    button_add_friend_show.popover = add_friend_popover;
 
     tox.notify["connected"].connect ((src, prop) => {
       this.image_user_status.icon_name = this.tox.connected ? "user-available" : "user-offline";

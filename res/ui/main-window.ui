@@ -274,7 +274,6 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="popover">add_friend_popover</property>
                 <child>
                   <object class="GtkImage" id="image5">
                     <property name="visible">True</property>
@@ -288,6 +287,7 @@
               </object>
               <packing>
                 <property name="pack_type">end</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <style>
@@ -380,115 +380,110 @@
       </object>
     </child>
   </template>
-  <object class="GtkPopover" id="add_friend_popover">
+  <object class="GtkGrid" id="add_friend_popover_content">
+    <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="modal">True</property>
-    <property name="relative-to">button_add_friend_show</property>
+    <property name="margin_left">6</property>
+    <property name="margin_right">6</property>
+    <property name="margin_top">6</property>
+    <property name="margin_bottom">6</property>
+    <property name="row_spacing">6</property>
+    <property name="column_spacing">10</property>
     <child>
-      <object class="GtkGrid" id="grid1">
+      <object class="GtkLabel" id="label1">
         <property name="visible">True</property>
-        <property name="margin">10</property>
         <property name="can_focus">False</property>
-        <property name="row_spacing">6</property>
-        <property name="column_spacing">10</property>
+        <property name="halign">start</property>
+        <property name="valign">center</property>
+        <property name="label" translatable="yes">Tox ID</property>
+        <property name="justify">right</property>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="label2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="halign">start</property>
+        <property name="valign">start</property>
+        <property name="label" translatable="yes">Message</property>
+        <property name="justify">right</property>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkEntry" id="entry_friend_id">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="valign">start</property>
+        <property name="hexpand">True</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkTextView" id="entry_friend_message">
+        <property name="height_request">100</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="wrap_mode">word</property>
+        <property name="input_hints">GTK_INPUT_HINT_SPELLCHECK | GTK_INPUT_HINT_NONE</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="box3">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="spacing">6</property>
         <child>
-          <object class="GtkLabel" id="label1">
+          <object class="GtkLabel" id="label_add_error">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
-            <property name="valign">center</property>
-            <property name="label" translatable="yes">Tox ID</property>
-            <property name="justify">right</property>
+            <property name="use_markup">True</property>
+            <property name="wrap">True</property>
           </object>
           <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label2">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="halign">start</property>
-            <property name="valign">start</property>
-            <property name="label" translatable="yes">Message</property>
-            <property name="justify">right</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkEntry" id="entry_friend_id">
+          <object class="GtkButton" id="button1">
+            <property name="label" translatable="yes">Add Friend</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="valign">start</property>
-            <property name="hexpand">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="ui_add_friend" swapped="no"/>
           </object>
           <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkTextView" id="entry_friend_message">
-            <property name="height_request">100</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
-            <property name="wrap_mode">word</property>
-            <property name="input_hints">GTK_INPUT_HINT_SPELLCHECK | GTK_INPUT_HINT_NONE</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="top_attach">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="box3">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="spacing">6</property>
-            <child>
-              <object class="GtkLabel" id="label_add_error">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">label</property>
-                <property name="use_markup">True</property>
-                <property name="wrap">True</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button1">
-                <property name="label" translatable="yes">Add Friend</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <signal name="clicked" handler="ui_add_friend" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="pack_type">end</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">2</property>
-            <property name="width">2</property>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
           </packing>
         </child>
       </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">2</property>
+        <property name="width">2</property>
+      </packing>
     </child>
   </object>
 </interface>
