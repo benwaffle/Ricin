@@ -76,6 +76,7 @@ namespace Tox {
       }
     }
 
+    // TODO
     public string status_message {
       owned get {
         uint8[] chars = new uint8[this.handle.self_get_status_message_size ()];
@@ -100,15 +101,6 @@ namespace Tox {
       }
     }
 
-    public uint32 nospam {
-      get {
-        return this.handle.nospam;
-      }
-      set {
-        this.handle.nospam = value;
-      }
-    }
-
     public void send_avatar (string path) {
       this.avatar = new Gdk.Pixbuf.from_file (path);
       debug (@"avatar = $path");
@@ -126,6 +118,16 @@ namespace Tox {
         uint8[] address = new uint8[ToxCore.ADDRESS_SIZE];
         this.handle.self_get_address (address);
         return Util.bin2hex (address);
+      }
+    }
+
+    public uint32 nospam {
+      get {
+        return this.handle.nospam;
+      }
+      set {
+        this.handle.nospam = value;
+        notify_property ("id");
       }
     }
 
@@ -192,6 +194,7 @@ namespace Tox {
             break;
         }
         this.connected = (status != ConnectionStatus.NONE);
+        notify_property ("status");
       });
 
       handle.callback_friend_connection_status ((self, num, status) => {

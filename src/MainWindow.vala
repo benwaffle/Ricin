@@ -7,12 +7,19 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
   [GtkChild] Gtk.Button button_call;
   [GtkChild] Gtk.Button button_video_chat;
 
-  // Profile
+  // Profile button
+  [GtkChild] Gtk.MenuButton button_show_profile;
+  [GtkChild] Gtk.Image profile_button_avatar;
+  [GtkChild] Gtk.Label profile_button_username;
+  [GtkChild] Gtk.Label profile_button_status;
+  [GtkChild] Gtk.Image profile_button_userstatus;
+
+  // Profile popover
+  [GtkChild] Gtk.Widget profile_popover_content;
   [GtkChild] Gtk.Image avatar_image;
   [GtkChild] Gtk.Entry entry_name;
   [GtkChild] Gtk.Entry entry_status;
-  [GtkChild] Gtk.Button button_user_status;
-  [GtkChild] Gtk.Image image_user_status;
+  [GtkChild] Gtk.Label label_tox_id;
 
   // Friend list
   [GtkChild] Gtk.ListBox friendlist;
@@ -125,7 +132,7 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
       }
     });
 
-    // Display the settings window while their is no friends online.
+    // Display the settings window while there is no friends online.
     var settings = new SettingsView (this.tox);
     this.chat_stack.add_named (settings, settings.name);
 
@@ -156,18 +163,40 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
 
     this.friendlist.bind_model (this.friends, fr => new FriendListRow (fr as Tox.Friend, this));
 
-    this.entry_status.bind_property ("text", tox, "status_message", BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE);
-
     this.toggle_search.bind_property ("active", friend_search_bar, "search-mode-enabled", BindingFlags.BIDIRECTIONAL);
 
+    // profile button
     var add_friend_popover = new Gtk.Popover (button_add_friend_show);
     add_friend_popover.add (add_friend_popover_content);
     button_add_friend_show.popover = add_friend_popover;
 
-    tox.notify["connected"].connect ((src, prop) => {
-      this.image_user_status.icon_name = this.tox.connected ? "user-available" : "user-offline";
-      this.button_user_status.sensitive = this.tox.connected;
+    var profile_popover = new Gtk.Popover (button_show_profile);
+    profile_popover.add (profile_popover_content);
+    button_show_profile.popover = profile_popover;
+    tox.bind_property ("id", label_tox_id, "label", BindingFlags.SYNC_CREATE);
+
+    avatar_image.bind_property ("pixbuf", profile_button_avatar, "pixbuf", BindingFlags.SYNC_CREATE);
+    entry_status.bind_property ("text", tox, "status_message", BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE);
+    entry_status.bind_property ("text", profile_button_status, "label", BindingFlags.SYNC_CREATE);
+    tox.bind_property ("username", profile_button_username, "label", BindingFlags.SYNC_CREATE);
+    tox.bind_property ("status", profile_button_userstatus, "icon_name", BindingFlags.SYNC_CREATE,
+      (bind, src, ref target) => {
+        var status = (Tox.UserStatus)src;
+        if (status == Tox.UserStatus.ONLINE)
+          target = "user-available";
+        else if (status == Tox.UserStatus.AWAY)
+          target = "user-away";
+        else if (status == Tox.UserStatus.BUSY)
+          target = "user-busy";
+        else if (status == Tox.UserStatus.OFFLINE)
+          target = "user-offline";
+        else if (status == Tox.UserStatus.BLOCKED) {
+          assert_not_reached (); // only friends can be blocked
+          return false;
+        }
+        return true;
     });
+    tox.bind_property ("connected", button_show_profile, "sensitive", BindingFlags.SYNC_CREATE);
 
     this.tox.friend_request.connect ((id, message) => {
       var dialog = new Gtk.MessageDialog (this, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.NONE, "Friend request from:");
@@ -297,32 +326,6 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
     this.tox.username = Util.escape_html (this.entry_name.text);
   }
 
-  // TODO
-  [GtkCallback]
-  private void cycle_user_status () {
-    var status = this.tox.status;
-    switch (status) {
-      case Tox.UserStatus.ONLINE:
-        // Set status to away.
-        this.tox.status = Tox.UserStatus.AWAY;
-        this.image_user_status.icon_name = "user-away";
-        break;
-      case Tox.UserStatus.AWAY:
-        // Set status to busy.
-        this.tox.status = Tox.UserStatus.BUSY;
-        this.image_user_status.icon_name = "user-busy";
-        break;
-      case Tox.UserStatus.BUSY:
-        // Set status to online.
-        this.tox.status = Tox.UserStatus.ONLINE;
-        this.image_user_status.icon_name = "user-available";
-        break;
-      default:
-        this.image_user_status.icon_name = "user-offline";
-        break;
-    }
-  }
-
   [GtkCallback]
   private void choose_avatar () {
     var chooser = new Gtk.FileChooserDialog ("Select your avatar",
@@ -353,7 +356,31 @@ public class Ricin.MainWindow : Gtk.ApplicationWindow {
   }
 
   [GtkCallback]
-  public void friend_list_update_search () {
+  private void friend_list_update_search () {
     friendlist.invalidate_filter ();
+  }
+
+  [GtkCallback]
+  private void copy_tox_id () {
+    Gtk.Clipboard.get (Gdk.SELECTION_CLIPBOARD).set_text (tox.id, -1);
+  }
+
+  [GtkCallback]
+  private void change_nospam () {
+    tox.nospam = Random.next_int ();
+  }
+
+  // TODO: make user status a GAction
+  [GtkCallback]
+  private void toggle_user_status (Gtk.ToggleButton button) {
+    if (button.name == "button_online")
+      tox.status = Tox.UserStatus.ONLINE;
+    else if (button.name == "button_busy")
+      tox.status = Tox.UserStatus.BUSY;
+    else if (button.name == "button_away")
+      tox.status = Tox.UserStatus.AWAY;
+    else {
+      assert_not_reached ();
+    }
   }
 }
