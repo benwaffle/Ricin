@@ -72,3 +72,7 @@ GtkLabel.info-message {
 .saved-file .btn-save-image:insensitive {
   background-color: #2ecc71;
 }
+
+.entry-height-button {
+  padding: 6px;
+}

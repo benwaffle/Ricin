@@ -114,6 +114,7 @@
                     </child>
                     <style>
                       <class name="image-button"/>
+                      <class name="entry-height-button"/>
                     </style>
                   </object>
                   <packing>
