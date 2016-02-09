@@ -82,8 +82,9 @@ class Ricin.ChatView : Gtk.Box {
       string filename = name;
       int i = 0;
 
-      while (FileUtils.test (downloads + filename, FileTest.EXISTS))
+      while (FileUtils.test (downloads + filename, FileTest.EXISTS)) {
         filename = @"$(++i)-$name";
+      }
 
       //FileUtils.set_data (path, bytes.get_data ());
       var path = @"/tmp/$name";
